@@ -42,9 +42,10 @@
     <header class="app-header">
       <div class="header-top-bar">
         <div class="header-badges">
-          <span class="badge badge-pulse">Greedy Algorithm</span>
-          <span class="badge badge-accent">Information Theory</span>
-          <span class="badge badge-outline">2-Bit vs Variable-Length</span>
+          <span class="badge badge-pulse">Greedy Approach</span>
+          <span class="badge badge-accent">Min-Priority Queue</span>
+          <span class="badge badge-outline">Prefix-Free Code</span>
+          <span class="badge badge-accent">Time: O(N) | Space: O(1)</span>
         </div>
         <button type="button" class="theme-toggle-btn" id="btn-theme-toggle" title="Toggle cloudy white / dark theme">
           <span class="theme-icon" id="theme-icon">☁️</span>
@@ -81,7 +82,7 @@
         </div>
         <div>
           <h1 class="main-title">DNA Compression Simulator</h1>
-          <p class="subtitle">Huffman Coding vs Fixed 2-Bit Binary Encoding for Nucleotides (A, T, G, C)</p>
+          <p class="subtitle">DAA Concept Implementation: Huffman Coding (Greedy Approach) vs Fixed 2-Bit Binary</p>
         </div>
       </div>
     </header>
@@ -90,11 +91,10 @@
     <div class="hero-scroll-intro" id="hero-scroll-intro">
       <div class="hero-blast-status-badge">
         <span class="status-pulse-dot" id="bg-status-dot"></span>
-        <span id="bg-blast-status">Helix State: Intact</span>
+        <span id="bg-blast-status">Alphabet: Σ = {A, T, G, C} (Size = 4)</span>
       </div>
-      <h2 class="hero-blast-headline">Unraveling the Genetic Code</h2>
-      <p class="hero-blast-sub">Interactive visualization of DNA double helix molecular expansion and Huffman sequence
-        compression.</p>
+      <h2 class="hero-blast-headline">Huffman Data Compression (Greedy Algorithm)</h2>
+      <p class="hero-blast-sub">Compressing a 4-symbol DNA alphabet by replacing fixed 2-bit binary codes with optimal variable-length prefix codes.</p>
     </div>
 
     <!-- Interactive Input Card -->
@@ -102,20 +102,20 @@
       <div class="card-header">
         <div class="card-title-group">
           <span class="step-num-pill">Input</span>
-          <h2>Enter DNA Nucleotide Sequence</h2>
+          <h2>Enter DNA Sequence (Alphabet Σ = {A, T, G, C})</h2>
         </div>
         <div class="seq-stats-pill" id="seq-stats-pill">
-          Length: <span id="seq-length-val">0</span> bp
+          Input Size (N): <span id="seq-length-val">0</span> characters
         </div>
       </div>
 
       <div class="input-wrapper">
-        <textarea id="dna-input" placeholder="Paste or type a DNA sequence (e.g., AAGCTTTACAAGGAAATTTCCCGGG)..."
+        <textarea id="dna-input" placeholder="Type or paste characters using A, T, G, C (e.g., AAAAAAAAAAAAAAAATTTTCCCCGG)..."
           rows="3" spellcheck="false" autocomplete="off"></textarea>
         <div class="input-actions-bar">
           <div class="validation-status" id="validation-status">
             <span class="status-dot"></span>
-            <span class="status-text">Enter A, T, G, C bases</span>
+            <span class="status-text">Enter A, T, G, C characters</span>
           </div>
           <button type="button" class="btn btn-ghost btn-sm" id="btn-clear" title="Clear input">
             Clear
@@ -125,31 +125,31 @@
 
       <!-- Presets for fast demonstration -->
       <div class="presets-container">
-        <span class="presets-label">Quick Sample Presets:</span>
+        <span class="presets-label">DAA Test Cases:</span>
         <div class="preset-buttons">
           <button type="button" class="btn-preset" data-preset="AAAAAAAAAAAAAAAATTTTCCCCGG"
-            title="Highly skewed frequency - demonstrates maximum Huffman compression">
-            <span class="preset-tag skew-high">High Compression</span>
-            Poly-A Skewed (26 bp)
+            title="Best Case: Heavily skewed frequency - demonstrates maximum Huffman bit savings">
+            <span class="preset-tag skew-high">Best Case</span>
+            Skewed Frequencies (26 chars)
           </button>
           <button type="button" class="btn-preset" data-preset="TTAGGGTTAGGGTTAGGGTTAGGG"
-            title="Human telomere repeat motif with heavy G and T bias">
-            <span class="preset-tag skew-med">Biological Repeat</span>
-            Telomeric Motif (24 bp)
+            title="Biased Case: Repeated pattern with heavy G and T frequencies">
+            <span class="preset-tag skew-med">Biased Pattern</span>
+            Repeated Pattern (24 chars)
           </button>
           <button type="button" class="btn-preset" data-preset="TATAAAAGGGCCCCATATA"
-            title="TATA-box core promoter motif">
-            <span class="preset-tag skew-med">Promoter</span>
-            TATA Box (19 bp)
+            title="Moderate Case: Unequal distribution of characters">
+            <span class="preset-tag skew-med">Moderate Skew</span>
+            Unequal Sample (19 chars)
           </button>
           <button type="button" class="btn-preset" data-preset="ATGCATGCATGCATGC"
-            title="Exact 25% equal distribution across all 4 bases - 0% compression">
-            <span class="preset-tag skew-none">Equal Frequency</span>
-            Balanced 4-Base (16 bp)
+            title="Worst Case: Equal 25% frequency for all 4 characters - 0% compression savings">
+            <span class="preset-tag skew-none">Worst Case</span>
+            Equal Frequencies (16 chars)
           </button>
-          <button type="button" class="btn-preset" id="btn-random-dna" title="Generate a random DNA sequence">
+          <button type="button" class="btn-preset" id="btn-random-dna" title="Generate a random test sequence">
             <span class="preset-tag skew-rand">Random</span>
-            Generate Random (32 bp)
+            Random Test Case (32 chars)
           </button>
         </div>
       </div>
@@ -184,7 +184,7 @@
       <div class="stepper-controls hidden" id="stepper-controls">
         <div class="stepper-nav-bar">
           <button type="button" class="btn btn-sm btn-ghost" id="btn-step-prev">← Previous Step</button>
-          <span class="stepper-indicator" id="stepper-indicator">Step 1 of 6</span>
+          <span class="stepper-indicator" id="stepper-indicator">Step 1 of 7</span>
           <button type="button" class="btn btn-sm btn-ghost" id="btn-step-next">Next Step →</button>
           <button type="button" class="btn btn-sm btn-accent" id="btn-step-autoplay">▶ Auto-Play</button>
         </div>
@@ -209,16 +209,15 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="step-num-pill">Step 1</span>
-            <h2>Nucleotide Frequency Counting</h2>
+            <h2>Character Frequency Count</h2>
           </div>
-          <span class="step-desc-tag">Input Character Tally</span>
+          <span class="step-desc-tag">O(N) Time Scan</span>
         </div>
 
         <p class="step-explanation">
-          Huffman coding is a <strong>frequency-dependent</strong> algorithm. We first scan the DNA sequence to
-          determine how many times each nucleotide (<span class="badge-base base-a">A</span>, <span
+          Huffman coding is a <strong>frequency-based</strong> greedy algorithm. First, count how many times each character (<span class="badge-base base-a">A</span>, <span
             class="badge-base base-t">T</span>, <span class="badge-base base-g">G</span>, <span
-            class="badge-base base-c">C</span>) appears.
+            class="badge-base base-c">C</span>) appears in the input of size <em>N</em>. Characters with higher frequencies will receive shorter binary codes.
         </p>
 
         <!-- Frequency Grid -->
@@ -228,7 +227,7 @@
 
         <!-- Frequency Distribution Bar -->
         <div class="distribution-bar-wrapper">
-          <div class="distribution-bar-label">Sequence Composition:</div>
+          <div class="distribution-bar-label">Character Frequency Distribution:</div>
           <div class="distribution-bar" id="freq-distribution-bar">
             <!-- Dynamically populated segments -->
           </div>
@@ -240,15 +239,13 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="step-num-pill">Step 2</span>
-            <h2>Greedy Priority Queue Merging</h2>
+            <h2>Min-Priority Queue & Greedy Merging</h2>
           </div>
-          <span class="step-desc-tag">Bottom-Up Tree Construction</span>
+          <span class="step-desc-tag">Greedy Choice Property</span>
         </div>
 
         <p class="step-explanation">
-          Huffman's greedy strategy repeatedly selects the <strong>two nodes with the smallest frequencies</strong> and
-          merges them into a new internal node whose frequency is the sum of both. Lower frequency bases end up deepest
-          in the tree (longer codes), while high-frequency bases stay near the root (shorter codes).
+          <strong>Greedy Strategy:</strong> At each step, take the <strong>two nodes with the smallest frequencies</strong> from the priority queue. Merge them into a new parent node with frequency equal to their sum, and insert the parent back into the queue. Characters with the lowest frequencies end up deepest in the tree (longer codes), while high-frequency characters remain closest to the root (shorter codes).
         </p>
 
         <div class="queue-merges-timeline" id="queue-merges-timeline">
@@ -261,18 +258,17 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="step-num-pill">Step 3</span>
-            <h2>Huffman Tree Diagram</h2>
+            <h2>Huffman Binary Tree (Prefix Code Tree)</h2>
           </div>
           <div class="tree-legend">
             <span class="legend-item"><span class="legend-dot edge-0"></span>Left = '0'</span>
             <span class="legend-item"><span class="legend-dot edge-1"></span>Right = '1'</span>
-            <span class="legend-item"><span class="legend-dot node-leaf"></span>Leaf (Base)</span>
+            <span class="legend-item"><span class="legend-dot node-leaf"></span>Leaf Node (Character)</span>
           </div>
         </div>
 
         <p class="step-explanation">
-          To find the binary code for each base, start at the <strong>Root</strong> and follow the branches down to that
-          leaf node. Every left branch appends a <strong>0</strong>; every right branch appends a <strong>1</strong>.
+          To find the binary code for each character, start at the <strong>Root</strong> and follow the path down to that leaf node. Every left branch appends a <strong>0</strong>; every right branch appends a <strong>1</strong>. Because characters only reside at leaf nodes, no code is a prefix of another (<strong>Prefix-Free Property</strong>).
         </p>
 
         <!-- Interactive SVG Tree Container -->
@@ -289,29 +285,28 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="step-num-pill">Step 4</span>
-            <h2>Generated Huffman Codebook vs Fixed 2-Bit Code</h2>
+            <h2>Huffman Code Table vs Fixed 2-Bit Binary</h2>
           </div>
-          <span class="step-desc-tag">Prefix-Free Variable Length</span>
+          <span class="step-desc-tag">Variable-Length vs Fixed-Length</span>
         </div>
 
         <p class="step-explanation">
-          Notice that no Huffman code is a prefix of any other code (<strong>Prefix Rule</strong>). This guarantees
-          unambiguous decoding without needing separators!
+          Standard fixed-length binary requires <strong>2 bits for each character</strong> ($2^2 = 4$). Huffman assigns <strong>variable-length codes</strong>: high-frequency characters get shorter codes (e.g., 1 bit), saving bits overall.
         </p>
 
         <div class="table-responsive">
           <table class="codebook-table" id="codebook-table">
             <thead>
               <tr>
-                <th>Base</th>
-                <th>Count (f)</th>
+                <th>Character</th>
+                <th>Frequency (f)</th>
                 <th>Probability (p)</th>
-                <th>Standard 2-Bit Code</th>
+                <th>Fixed 2-Bit Code</th>
                 <th>Huffman Code</th>
                 <th>Code Length</th>
                 <th>Total Bits (Fixed)</th>
                 <th>Total Bits (Huffman)</th>
-                <th>Bit Difference</th>
+                <th>Bits Saved</th>
               </tr>
             </thead>
             <tbody id="codebook-tbody">
@@ -341,12 +336,11 @@
         </div>
 
         <p class="step-explanation">
-          Each nucleotide in the original sequence is substituted by its corresponding Huffman codeword. Hover over any
-          base to inspect its binary translation!
+          Each character in the original sequence is replaced by its Huffman binary code. Hover over any character below to inspect its binary mapping.
         </p>
 
         <!-- Base-by-Base interactive ribbon -->
-        <div class="encoded-ribbon-label">Base Sequence to Binary Mapping:</div>
+        <div class="encoded-ribbon-label">Character to Binary Mapping:</div>
         <div class="nucleotide-stream-container" id="nucleotide-stream-container">
           <!-- Populated by JS -->
         </div>
@@ -370,9 +364,7 @@
         </div>
 
         <p class="step-explanation">
-          In standard uncompressed representation, 4 distinct DNA bases {A, T, G, C} require <strong>2 bits
-            each</strong> ($2^2 = 4$). Huffman encoding leverages non-uniform base frequencies to allocate fewer bits to
-          frequent bases.
+          In standard uncompressed representation, 4 distinct characters {A, T, G, C} require <strong>2 bits each</strong> ($\lceil \log_2 4 \rceil = 2$). Huffman encoding reduces total bits whenever character frequencies are not equal.
         </p>
 
         <!-- Metrics Cards Grid -->
@@ -380,17 +372,17 @@
           <div class="metric-card metric-original">
             <div class="metric-label">Original Binary Size (Fixed 2-bit)</div>
             <div class="metric-value" id="val-original-bits">0 <span class="metric-unit">bits</span></div>
-            <div class="metric-sub" id="val-original-calc">Sequence Length × 2 bits</div>
+            <div class="metric-sub" id="val-original-calc">N characters × 2 bits</div>
           </div>
 
           <div class="metric-card metric-compressed">
-            <div class="metric-label">Huffman Encoded Size</div>
+            <div class="metric-label">Huffman Compressed Size</div>
             <div class="metric-value" id="val-compressed-bits">0 <span class="metric-unit">bits</span></div>
-            <div class="metric-sub" id="val-compressed-calc">Sum of (Freq × Code Length)</div>
+            <div class="metric-sub" id="val-compressed-calc">Sum of (Frequency × Code Length)</div>
           </div>
 
           <div class="metric-card metric-saved">
-            <div class="metric-label">Net Space Saved</div>
+            <div class="metric-label">Total Bits Saved</div>
             <div class="metric-value" id="val-saved-bits">0 <span class="metric-unit">bits</span></div>
             <div class="metric-sub" id="val-saved-pct-tag">+0.0% reduction</div>
           </div>
@@ -398,17 +390,17 @@
           <div class="metric-card metric-ratio">
             <div class="metric-label">Compression Percentage</div>
             <div class="metric-value" id="val-compression-percent">0%</div>
-            <div class="metric-sub" id="val-ratio-desc">Savings over original size</div>
+            <div class="metric-sub" id="val-ratio-desc">Savings over fixed 2-bit baseline</div>
           </div>
         </div>
 
         <!-- Size Visual Comparison Bar -->
         <div class="visual-size-comparison">
           <div class="comparison-bar-row">
-            <div class="comparison-label">Original (Fixed 2-bit):</div>
+            <div class="comparison-label">Fixed 2-Bit Binary:</div>
             <div class="comparison-track">
               <div class="comparison-fill fill-original" id="bar-original-fill" style="width: 100%;">
-                <span class="bar-fill-text" id="bar-original-text">100% (2.00 bits/base)</span>
+                <span class="bar-fill-text" id="bar-original-text">100% (2.00 bits/character)</span>
               </div>
             </div>
           </div>
@@ -417,13 +409,13 @@
             <div class="comparison-label">Huffman Compressed:</div>
             <div class="comparison-track">
               <div class="comparison-fill fill-compressed" id="bar-compressed-fill" style="width: 75%;">
-                <span class="bar-fill-text" id="bar-compressed-text">75% (1.50 bits/base)</span>
+                <span class="bar-fill-text" id="bar-compressed-text">75% (1.50 bits/character)</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Theoretical Insights Box (Shannon Entropy & Viva Q&A) -->
+        <!-- DAA Concept & Viva Summary Cards -->
         <div class="insights-box">
           <div class="insights-header">
             <svg class="insights-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -431,25 +423,67 @@
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                 clip-rule="evenodd" />
             </svg>
-            <h3>Algorithm Analysis & Viva Insights</h3>
+            <h3>DAA Concept Implementation & Viva Guide</h3>
           </div>
-          <div class="insights-content">
+          
+          <div class="daa-cards-grid">
+            <div class="daa-card">
+              <div class="daa-card-badge">Paradigm</div>
+              <h4>Greedy Algorithm Approach</h4>
+              <p>Huffman's algorithm makes the <strong>locally optimal choice</strong> at each step by merging the two lowest-frequency nodes, leading to a <strong>globally optimal</strong> prefix tree with minimal total weighted path length.</p>
+            </div>
+
+            <div class="daa-card">
+              <div class="daa-card-badge">Properties</div>
+              <h4>Greedy Choice & Optimal Substructure</h4>
+              <p><strong>Greedy Choice:</strong> The two lowest frequency symbols can always be placed as sibling leaves at the maximum depth of an optimal tree.<br><strong>Optimal Substructure:</strong> Merging the two lowest symbols reduces the problem of size <em>k</em> to an optimal subproblem of size <em>k-1</em>.</p>
+            </div>
+
+            <div class="daa-card">
+              <div class="daa-card-badge">Complexity</div>
+              <h4>Time & Space Complexity</h4>
+              <p><strong>Time Complexity: O(N)</strong><br>
+                • Frequency Counting: O(N)<br>
+                • Priority Queue Merges: O(K log K) = O(1) since K ≤ 4<br>
+                • Encoding & Decoding: O(N)<br>
+                <strong>Auxiliary Space: O(1)</strong><br>
+                • Huffman tree has at most 2K - 1 = 7 nodes.</p>
+            </div>
+
+            <div class="daa-card">
+              <div class="daa-card-badge">Prefix Code</div>
+              <h4>Prefix-Free Property</h4>
+              <p>No codeword is a prefix of any other codeword because all characters are located at <strong>leaf nodes</strong>. This allows instant, unambiguous decoding without delimiters like spaces or commas.</p>
+            </div>
+
+            <div class="daa-card">
+              <div class="daa-card-badge">Comparison</div>
+              <h4>Fixed (2-Bit) vs Variable (Huffman)</h4>
+              <p>With 4 symbols {A, T, G, C}, fixed binary needs ⌈log₂ 4⌉ = 2 bits each. When character frequencies are skewed (unequal), Huffman allocates fewer bits (1 bit) to frequent characters, achieving &lt; 2.00 bits/character average.</p>
+            </div>
+
+            <div class="daa-card">
+              <div class="daa-card-badge">Test Cases</div>
+              <h4>Best Case vs Worst Case in DAA</h4>
+              <p><strong>Best Case:</strong> Heavily skewed frequencies (e.g., A=70%). Frequent characters get 1-bit codes, maximizing bit savings (up to 40%+).<br><strong>Worst Case:</strong> Equal frequencies (25% each). Every character gets 2 bits, giving 0% savings.</p>
+            </div>
+          </div>
+
+          <div class="insights-content" style="margin-top: 1.25rem;">
             <div class="insight-item">
-              <strong>Average Code Length ($L$):</strong>
-              <span id="insight-avg-len">1.50 bits/symbol</span>
-              <p class="insight-desc">The expected number of bits used per nucleotide by Huffman coding.</p>
+              <strong>Average Code Length (L):</strong>
+              <span id="insight-avg-len">1.50 bits/character</span>
+              <p class="insight-desc">Expected number of bits per character: L = Σ (p_i × length_i).</p>
             </div>
             <div class="insight-item">
-              <strong>Shannon Theoretical Entropy ($H$):</strong>
-              <span id="insight-entropy">1.45 bits/symbol</span>
-              <p class="insight-desc">The theoretical lower bound of compression according to Shannon's Source Coding
-                Theorem.</p>
+              <strong>Theoretical Minimum (Entropy H):</strong>
+              <span id="insight-entropy">1.45 bits/character</span>
+              <p class="insight-desc">Theoretical lower bound: H = -Σ p_i log₂(p_i). Huffman code length L is always within H ≤ L &lt; H + 1.</p>
             </div>
             <div class="insight-item">
-              <strong>Why 2 Bits per Base?</strong>
-              <span class="text-cyan">Fixed Binary: $\lceil\log_2 4\rceil = 2$ bits</span>
-              <p class="insight-desc">Since standard DNA has 4 bases, uncompressed binary uses 2 bits (e.g. A=00, C=01,
-                G=10, T=11). When frequencies are biased, Huffman beats this baseline!</p>
+              <strong>Alphabet Size (K):</strong>
+              <span class="text-cyan">K = 4 {A, T, G, C}</span>
+              <p class="insight-desc">Because K is small and constant, tree operations take O(1) time and space.</p>
             </div>
           </div>
         </div>
@@ -460,23 +494,22 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="step-num-pill">Step 7</span>
-            <h2>Lossless Decompression & Tree Traversal Verification</h2>
+            <h2>Lossless Decoding (Tree Traversal Verification)</h2>
           </div>
-          <span class="badge badge-success" id="lossless-badge">Lossless Match</span>
+          <span class="badge badge-success" id="lossless-badge">100% Lossless Match</span>
         </div>
 
         <p class="step-explanation">
-          To prove Huffman coding is <strong>100% lossless</strong>, we feed the compressed bitstream back into the
-          Huffman tree. Each bit navigates from root to leaf until a nucleotide is decoded, then restarts at the root.
+          To prove Huffman coding is <strong>100% lossless</strong>, we decode the compressed bitstream by walking down the Huffman tree. Each bit steers left ('0') or right ('1'). When a leaf node is reached, we output the character and return to the root.
         </p>
 
         <div class="decompression-panel">
           <div class="decompression-row">
-            <span class="decomp-label">Original Sequence:</span>
+            <span class="decomp-label">Original Input:</span>
             <div class="decomp-seq" id="decomp-original"></div>
           </div>
           <div class="decompression-row">
-            <span class="decomp-label">Reconstructed Sequence:</span>
+            <span class="decomp-label">Decoded Output:</span>
             <div class="decomp-seq text-success" id="decomp-reconstructed"></div>
           </div>
           <div class="decomp-status" id="decomp-status-box">
@@ -484,13 +517,13 @@
               <path fill-rule="evenodd"
                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                 clip-rule="evenodd" />
-            </svg>
-            <span>Verification Successful: 100% of nucleotides match. Zero data loss.</span>
-          </div>
+          </svg>
+          <span>Verification Successful: 100% match. Reconstructed characters are identical to the original input.</span>
         </div>
-      </section>
+      </div>
+    </section>
 
-    </main>
+  </main>
 
     <!-- Footer -->
     <!-- <footer class="app-footer">

@@ -119,16 +119,16 @@
       // 5. Update Status Pill & Dot
       if (statusText) {
         if (blastProgress === 0) {
-          statusText.textContent = 'Helix State: Intact';
+          statusText.textContent = 'Alphabet: Σ = {A, T, G, C} (Size = 4)';
           if (statusDot) statusDot.style.background = 'var(--color-a)';
         } else if (blastProgress < 0.9) {
-          statusText.textContent = `Expanding Double Helix (${Math.round(blastProgress * 100)}%)`;
+          statusText.textContent = `Unpacking 4 Bases (${Math.round(blastProgress * 100)}%)`;
           if (statusDot) statusDot.style.background = 'var(--color-c)';
         } else if (aheadProgress < 0.8) {
-          statusText.textContent = '💥 DNA Blasted Into Nucleotides';
-          if (statusDot) statusDot.style.background = 'var(--color-t)';
+          statusText.textContent = '4 Characters Ready for Huffman Compression';
+          if (statusDot) statusDot.style.background = 'var(--color-a)';
         } else {
-          statusText.textContent = 'DNA Blasted • Nucleotides Ready';
+          statusText.textContent = 'Alphabet Ready: {A, T, G, C}';
           if (statusDot) statusDot.style.background = 'var(--color-c)';
         }
       }

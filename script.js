@@ -122,7 +122,7 @@ function buildHuffmanTree(freqs) {
       leftLabel,
       rightLabel,
       combinedFreq,
-      description: `Extracted lowest: [${leftLabel}] and [${rightLabel}]. Merged into parent with frequency ${combinedFreq}.`
+      description: `Greedy Choice: Extracted 2 lowest frequencies [${leftLabel}] and [${rightLabel}]. Merged into parent with combined frequency ${combinedFreq}.`
     });
 
     // 4. Insert new parent node back into priority queue
@@ -416,7 +416,7 @@ function cleanAndValidateInput() {
 
   if (val.length === 0) {
     validationStatus.className = 'validation-status';
-    validationStatus.querySelector('.status-text').textContent = 'Enter A, T, G, C bases';
+    validationStatus.querySelector('.status-text').textContent = 'Enter A, T, G, C characters';
     hideError();
     return '';
   }
@@ -427,12 +427,12 @@ function cleanAndValidateInput() {
   if (invalidChars.length > 0) {
     validationStatus.className = 'validation-status invalid';
     validationStatus.querySelector('.status-text').textContent = `Invalid character(s): "${invalidChars.slice(0, 5)}"`;
-    showError(`Your sequence contains invalid characters (${invalidChars[0]}). Only A, T, G, and C are valid DNA bases.`);
+    showError(`Input contains invalid character(s) (${invalidChars[0]}). Only characters A, T, G, and C are allowed.`);
     return null;
   }
 
   validationStatus.className = 'validation-status valid';
-  validationStatus.querySelector('.status-text').textContent = 'Valid DNA sequence';
+  validationStatus.querySelector('.status-text').textContent = 'Valid DNA sequence (Alphabet: A, T, G, C)';
   hideError();
   return val;
 }
@@ -590,7 +590,7 @@ function renderStep1Frequencies(seq, freqs) {
     card.innerHTML = `
       <div class="freq-avatar ${base.toLowerCase()}">${base}</div>
       <div class="freq-info">
-        <div class="freq-name">${BASE_NAMES[base]}</div>
+        <div class="freq-name">Character ${base} (${BASE_NAMES[base]})</div>
         <div class="freq-count-row">
           <span class="freq-count">${count}</span>
           <span class="freq-pct">(${pct}%)</span>
@@ -641,7 +641,7 @@ function renderStep2MergeLog(mergeLog) {
     } else {
       item.innerHTML = `
         <div class="queue-step-meta">
-          <span class="iteration-pill">Merge #${step.iteration}</span>
+          <span class="iteration-pill">Greedy Choice #${step.iteration}</span>
           <div class="queue-step-desc">${step.description}</div>
         </div>
         <div class="queue-step-visual">
@@ -649,7 +649,7 @@ function renderStep2MergeLog(mergeLog) {
           <span class="queue-operator">+</span>
           <span class="queue-node-chip">${step.rightLabel}</span>
           <span class="queue-operator">➔</span>
-          <span class="queue-node-chip merged">Internal (${step.combinedFreq})</span>
+          <span class="queue-node-chip merged">Parent Node (${step.combinedFreq})</span>
         </div>
       `;
     }
@@ -804,7 +804,7 @@ function renderStep3TreeSVG(root) {
         }
         if (tooltip) {
           tooltip.style.display = 'block';
-          tooltip.innerHTML = `<strong>Base ${node.char} (${BASE_NAMES[node.char]})</strong><br>Frequency: ${node.freq}<br>Huffman Code: <span style="color:#38bdf8; font-weight:700;">${node.code}</span> (${node.code.length} bits)<br>Fixed Binary: <span style="color:#94a3b8">${FIXED_2BIT_CODES[node.char]}</span> (2 bits)`;
+          tooltip.innerHTML = `<strong>Character ${node.char} (${BASE_NAMES[node.char]})</strong><br>Frequency: ${node.freq}<br>Huffman Code: <span style="color:#38bdf8; font-weight:700;">${node.code}</span> (${node.code.length} bits)<br>Fixed Binary: <span style="color:#94a3b8">${FIXED_2BIT_CODES[node.char]}</span> (2 bits)`;
           const rect = svg.getBoundingClientRect();
           tooltip.style.left = `${e.clientX - rect.left + 15}px`;
           tooltip.style.top = `${e.clientY - rect.top - 15}px`;
@@ -905,7 +905,7 @@ function renderStep4Codebook(freqs, codeMap, totalBases) {
     tr.innerHTML = `
       <td>
         <span class="badge-base base-${base.toLowerCase()}">${base}</span>
-        <strong>${BASE_NAMES[base]}</strong>
+        <strong>Character ${base} (${BASE_NAMES[base]})</strong>
       </td>
       <td><strong>${count}</strong></td>
       <td>${prob}</td>
@@ -923,9 +923,9 @@ function renderStep4Codebook(freqs, codeMap, totalBases) {
   tfoot.innerHTML = `
     <tr>
       <td><strong>Total Summary</strong></td>
-      <td><strong>${totalBases} bp</strong></td>
+      <td><strong>${totalBases} chars</strong></td>
       <td><strong>1.000</strong></td>
-      <td><strong>2.00 b/base</strong></td>
+      <td><strong>2.00 b/char</strong></td>
       <td><strong>Variable</strong></td>
       <td>-</td>
       <td><strong>${totalFixedBits} bits</strong></td>
@@ -985,25 +985,25 @@ function renderStep6Metrics(metrics) {
 
   // KPI Numbers
   document.getElementById('val-original-bits').innerHTML = `${metrics.originalBits} <span class="metric-unit">bits</span>`;
-  document.getElementById('val-original-calc').textContent = `${metrics.totalBases} bases × 2 bits/base`;
+  document.getElementById('val-original-calc').textContent = `${metrics.totalBases} characters × 2 bits/char`;
 
   document.getElementById('val-compressed-bits').innerHTML = `${metrics.compressedBits} <span class="metric-unit">bits</span>`;
-  document.getElementById('val-compressed-calc').textContent = `Average ${metrics.avgCodeLength} bits/base`;
+  document.getElementById('val-compressed-calc').textContent = `Average ${metrics.avgCodeLength} bits/character`;
 
   document.getElementById('val-saved-bits').innerHTML = `${metrics.savedBits} <span class="metric-unit">bits</span>`;
   if (metrics.savedBits > 0) {
-    document.getElementById('val-saved-pct-tag').textContent = `+${metrics.savingsPercent}% reduction`;
-    document.getElementById('val-ratio-desc').textContent = 'Savings over 2-bit baseline';
+    document.getElementById('val-saved-pct-tag').textContent = `+${metrics.savingsPercent}% bit reduction`;
+    document.getElementById('val-ratio-desc').textContent = 'Savings over 2-bit fixed baseline';
     document.getElementById('savings-badge-top').textContent = `${metrics.savingsPercent}% Space Saved`;
     document.getElementById('savings-badge-top').className = 'badge badge-accent';
   } else if (metrics.savedBits === 0) {
-    document.getElementById('val-saved-pct-tag').textContent = `0.0% (Equal to 2-bit fixed)`;
-    document.getElementById('val-ratio-desc').textContent = 'Max entropy (equiprobable)';
-    document.getElementById('savings-badge-top').textContent = `0% Saved (Equiprobable)`;
+    document.getElementById('val-saved-pct-tag').textContent = `0.0% (Worst Case: Equal Frequencies)`;
+    document.getElementById('val-ratio-desc').textContent = 'Uniform 25% distribution';
+    document.getElementById('savings-badge-top').textContent = `0% Saved (Worst Case)`;
     document.getElementById('savings-badge-top').className = 'badge badge-outline';
   } else {
     document.getElementById('val-saved-pct-tag').textContent = `${metrics.savingsPercent}% expansion`;
-    document.getElementById('val-ratio-desc').textContent = 'Overhead due to codebook';
+    document.getElementById('val-ratio-desc').textContent = 'Overhead due to small input';
     document.getElementById('savings-badge-top').textContent = `${metrics.savingsPercent}% (No savings)`;
     document.getElementById('savings-badge-top').className = 'badge badge-danger';
   }
@@ -1014,12 +1014,12 @@ function renderStep6Metrics(metrics) {
   
   const barCompressedFill = document.getElementById('bar-compressed-fill');
   barCompressedFill.style.width = `${compressedRatioPercent}%`;
-  document.getElementById('bar-compressed-text').textContent = `${compressedRatioPercent.toFixed(1)}% (${metrics.avgCodeLength} bits/base)`;
-  document.getElementById('bar-original-text').textContent = `100.0% (2.00 bits/base)`;
+  document.getElementById('bar-compressed-text').textContent = `${compressedRatioPercent.toFixed(1)}% (${metrics.avgCodeLength} bits/char)`;
+  document.getElementById('bar-original-text').textContent = `100.0% (2.00 bits/char)`;
 
   // Theoretical Insights
-  document.getElementById('insight-avg-len').textContent = `${metrics.avgCodeLength} bits/symbol`;
-  document.getElementById('insight-entropy').textContent = `${metrics.entropy} bits/symbol`;
+  document.getElementById('insight-avg-len').textContent = `${metrics.avgCodeLength} bits/character`;
+  document.getElementById('insight-entropy').textContent = `${metrics.entropy} bits/character`;
 }
 
 // =============================================================================
@@ -1043,7 +1043,7 @@ function renderStep7Decompression(original, reconstructed) {
       <svg class="decomp-check-icon" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
       </svg>
-      <span>Verification Passed: 100% Lossless Match. Every single nucleotide was reconstructed identically!</span>
+      <span>Verification Passed: 100% Lossless Match. All ${original.length} characters reconstructed identically via tree traversal!</span>
     `;
     losslessBadge.textContent = '100% Lossless';
     losslessBadge.className = 'badge badge-success';
