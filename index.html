@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNA Compression Simulator | Huffman Coding</title>
+  <meta name="description" content="Interactive DNA sequence compression simulator using Huffman Coding. Compare fixed 2-bit encoding with variable-length Huffman codes step-by-step.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <!-- Fullscreen Fixed DNA Blast Background Layer -->
+  <div id="dna-blast-bg" class="dna-blast-bg" aria-hidden="true">
+    <div class="blast-bg-inner">
+      <!-- Ambient Shockwave Rings -->
+      <div class="bg-shockwave bg-shockwave-1"></div>
+      <div class="bg-shockwave bg-shockwave-2"></div>
+
+      <!-- Exploding 3D Nucleotide Base Particles (A, T, G, C) flying across screen -->
+      <div class="bg-particles-container" id="bg-blast-particles"></div>
+
+      <!-- High-Res DNA Double Helix Frame (Scrubs 1 to 10 and blasts outward) -->
+      <div class="bg-dna-wrapper">
+        <img 
+          id="bg-dna-img" 
+          src="./DNA_double_helix/frame_001.png" 
+          alt="DNA Double Helix Background" 
+          class="bg-dna-image" 
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-top-bar">
+        <div class="header-badges">
+          <span class="badge badge-pulse">Greedy Algorithm</span>
+          <span class="badge badge-accent">Information Theory</span>
+          <span class="badge badge-outline">2-Bit vs Variable-Length</span>
+        </div>
+        <button type="button" class="theme-toggle-btn" id="btn-theme-toggle" title="Toggle cloudy white / dark theme">
+          <span class="theme-icon" id="theme-icon">☁️</span>
+          <span class="theme-label" id="theme-label">Cloudy White</span>
+        </button>
+      </div>
+      <div class="header-title-row">
+        <div class="helix-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 6C12 18 36 12 36 24C36 36 12 30 12 42" stroke="url(#helix-grad)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M36 6C36 18 12 12 12 24C12 36 36 30 36 42" stroke="url(#helix-grad-2)" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="12" cy="15" r="3" fill="#10b981"/>
+            <circle cx="36" cy="15" r="3" fill="#06b6d4"/>
+            <circle cx="24" cy="24" r="3" fill="#f59e0b"/>
+            <circle cx="12" cy="33" r="3" fill="#f43f5e"/>
+            <circle cx="36" cy="33" r="3" fill="#10b981"/>
+            <line x1="16" y1="15" x2="32" y2="15" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+            <line x1="16" y1="33" x2="32" y2="33" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+            <defs>
+              <linearGradient id="helix-grad" x1="12" y1="6" x2="36" y2="42" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#10b981"/>
+                <stop offset="0.5" stop-color="#06b6d4"/>
+                <stop offset="1" stop-color="#a855f7"/>
+              </linearGradient>
+              <linearGradient id="helix-grad-2" x1="36" y1="6" x2="12" y2="42" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#f43f5e"/>
+                <stop offset="0.5" stop-color="#f59e0b"/>
+                <stop offset="1" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1 class="main-title">DNA Compression Simulator</h1>
+          <p class="subtitle">Huffman Coding vs Fixed 2-Bit Binary Encoding for Nucleotides (A, T, G, C)</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Scroll Intro (Initial Blast Zone) -->
+    <div class="hero-scroll-intro" id="hero-scroll-intro">
+      <div class="hero-blast-status-badge">
+        <span class="status-pulse-dot" id="bg-status-dot"></span>
+        <span id="bg-blast-status">Helix State: Intact</span>
+      </div>
+      <h2 class="hero-blast-headline">Unraveling the Genetic Code</h2>
+      <p class="hero-blast-sub">Interactive visualization of DNA double helix molecular expansion and Huffman sequence compression.</p>
+    </div>
+
+    <!-- Interactive Input Card -->
+    <section class="card input-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="step-num-pill">Input</span>
+          <h2>Enter DNA Nucleotide Sequence</h2>
+        </div>
+        <div class="seq-stats-pill" id="seq-stats-pill">
+          Length: <span id="seq-length-val">0</span> bp
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <textarea 
+          id="dna-input" 
+          placeholder="Paste or type a DNA sequence (e.g., AAGCTTTACAAGGAAATTTCCCGGG)..." 
+          rows="3" 
+          spellcheck="false"
+          autocomplete="off"
+        ></textarea>
+        <div class="input-actions-bar">
+          <div class="validation-status" id="validation-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Enter A, T, G, C bases</span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-clear" title="Clear input">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Presets for fast demonstration -->
+      <div class="presets-container">
+        <span class="presets-label">Quick Sample Presets:</span>
+        <div class="preset-buttons">
+          <button type="button" class="btn-preset" data-preset="AAAAAAAAAAAAAAAATTTTCCCCGG" title="Highly skewed frequency - demonstrates maximum Huffman compression">
+            <span class="preset-tag skew-high">High Compression</span>
+            Poly-A Skewed (26 bp)
+          </button>
+          <button type="button" class="btn-preset" data-preset="TTAGGGTTAGGGTTAGGGTTAGGG" title="Human telomere repeat motif with heavy G and T bias">
+            <span class="preset-tag skew-med">Biological Repeat</span>
+            Telomeric Motif (24 bp)
+          </button>
+          <button type="button" class="btn-preset" data-preset="TATAAAAGGGCCCCATATA" title="TATA-box core promoter motif">
+            <span class="preset-tag skew-med">Promoter</span>
+            TATA Box (19 bp)
+          </button>
+          <button type="button" class="btn-preset" data-preset="ATGCATGCATGCATGC" title="Exact 25% equal distribution across all 4 bases - 0% compression">
+            <span class="preset-tag skew-none">Equal Frequency</span>
+            Balanced 4-Base (16 bp)
+          </button>
+          <button type="button" class="btn-preset" id="btn-random-dna" title="Generate a random DNA sequence">
+            <span class="preset-tag skew-rand">Random</span>
+            Generate Random (32 bp)
+          </button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons-row">
+        <button type="button" class="btn btn-primary" id="btn-run-compression">
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+          </svg>
+          Run Compression
+        </button>
+        
+        <button type="button" class="btn btn-secondary" id="btn-step-mode">
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          </svg>
+          Step-by-Step Mode
+        </button>
+
+        <div class="view-mode-toggle">
+          <button type="button" class="mode-tab active" id="tab-all-steps">Full Report</button>
+          <button type="button" class="mode-tab" id="tab-stepper">Step Walkthrough</button>
+        </div>
+      </div>
+
+      <!-- Step Walkthrough Navigation (Visible in Step Walkthrough mode) -->
+      <div class="stepper-controls hidden" id="stepper-controls">
+        <div class="stepper-nav-bar">
+          <button type="button" class="btn btn-sm btn-ghost" id="btn-step-prev">← Previous Step</button>
+          <span class="stepper-indicator" id="stepper-indicator">Step 1 of 6</span>
+          <button type="button" class="btn btn-sm btn-ghost" id="btn-step-next">Next Step →</button>
+          <button type="button" class="btn btn-sm btn-accent" id="btn-step-autoplay">▶ Auto-Play</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error/Notice Alert Box -->
+    <div class="alert-box hidden" id="error-alert">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <div id="error-message">Please enter a valid DNA sequence containing A, T, G, or C.</div>
+    </div>
+
+    <!-- MAIN RESULTS CONTAINER -->
+    <main id="results-container" class="results-container hidden">
+
+      <!-- STEP 1: Frequency Analysis -->
+      <section class="card step-card" id="step-1-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 1</span>
+            <h2>Nucleotide Frequency Counting</h2>
+          </div>
+          <span class="step-desc-tag">Input Character Tally</span>
+        </div>
+
+        <p class="step-explanation">
+          Huffman coding is a <strong>frequency-dependent</strong> algorithm. We first scan the DNA sequence to determine how many times each nucleotide (<span class="badge-base base-a">A</span>, <span class="badge-base base-t">T</span>, <span class="badge-base base-g">G</span>, <span class="badge-base base-c">C</span>) appears.
+        </p>
+
+        <!-- Frequency Grid -->
+        <div class="freq-cards-grid" id="freq-cards-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Frequency Distribution Bar -->
+        <div class="distribution-bar-wrapper">
+          <div class="distribution-bar-label">Sequence Composition:</div>
+          <div class="distribution-bar" id="freq-distribution-bar">
+            <!-- Dynamically populated segments -->
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: Priority Queue & Greedy Merging -->
+      <section class="card step-card" id="step-2-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 2</span>
+            <h2>Greedy Priority Queue Merging</h2>
+          </div>
+          <span class="step-desc-tag">Bottom-Up Tree Construction</span>
+        </div>
+
+        <p class="step-explanation">
+          Huffman's greedy strategy repeatedly selects the <strong>two nodes with the smallest frequencies</strong> and merges them into a new internal node whose frequency is the sum of both. Lower frequency bases end up deepest in the tree (longer codes), while high-frequency bases stay near the root (shorter codes).
+        </p>
+
+        <div class="queue-merges-timeline" id="queue-merges-timeline">
+          <!-- Populated by JS showing iteration 1, 2, 3 -->
+        </div>
+      </section>
+
+      <!-- STEP 3: Huffman Tree Visualization -->
+      <section class="card step-card" id="step-3-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 3</span>
+            <h2>Huffman Tree Diagram</h2>
+          </div>
+          <div class="tree-legend">
+            <span class="legend-item"><span class="legend-dot edge-0"></span>Left = '0'</span>
+            <span class="legend-item"><span class="legend-dot edge-1"></span>Right = '1'</span>
+            <span class="legend-item"><span class="legend-dot node-leaf"></span>Leaf (Base)</span>
+          </div>
+        </div>
+
+        <p class="step-explanation">
+          To find the binary code for each base, start at the <strong>Root</strong> and follow the branches down to that leaf node. Every left branch appends a <strong>0</strong>; every right branch appends a <strong>1</strong>.
+        </p>
+
+        <!-- Interactive SVG Tree Container -->
+        <div class="tree-canvas-container">
+          <svg id="huffman-tree-svg" class="huffman-tree-svg" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet">
+            <!-- Dynamic tree paths and nodes rendered here -->
+          </svg>
+          <div class="tree-tooltip" id="tree-tooltip"></div>
+        </div>
+      </section>
+
+      <!-- STEP 4: Huffman Code Table -->
+      <section class="card step-card" id="step-4-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 4</span>
+            <h2>Generated Huffman Codebook vs Fixed 2-Bit Code</h2>
+          </div>
+          <span class="step-desc-tag">Prefix-Free Variable Length</span>
+        </div>
+
+        <p class="step-explanation">
+          Notice that no Huffman code is a prefix of any other code (<strong>Prefix Rule</strong>). This guarantees unambiguous decoding without needing separators!
+        </p>
+
+        <div class="table-responsive">
+          <table class="codebook-table" id="codebook-table">
+            <thead>
+              <tr>
+                <th>Base</th>
+                <th>Count (f)</th>
+                <th>Probability (p)</th>
+                <th>Standard 2-Bit Code</th>
+                <th>Huffman Code</th>
+                <th>Code Length</th>
+                <th>Total Bits (Fixed)</th>
+                <th>Total Bits (Huffman)</th>
+                <th>Bit Difference</th>
+              </tr>
+            </thead>
+            <tbody id="codebook-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+            <tfoot id="codebook-tfoot">
+              <!-- Summary totals -->
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- STEP 5: Sequence Encoding -->
+      <section class="card step-card" id="step-5-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 5</span>
+            <h2>Encoded Binary Bitstream</h2>
+          </div>
+          <button type="button" class="btn btn-sm btn-ghost" id="btn-copy-bitstream">
+            <svg class="btn-icon-sm" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+            </svg>
+            <span id="copy-btn-text">Copy Bitstream</span>
+          </button>
+        </div>
+
+        <p class="step-explanation">
+          Each nucleotide in the original sequence is substituted by its corresponding Huffman codeword. Hover over any base to inspect its binary translation!
+        </p>
+
+        <!-- Base-by-Base interactive ribbon -->
+        <div class="encoded-ribbon-label">Base Sequence to Binary Mapping:</div>
+        <div class="nucleotide-stream-container" id="nucleotide-stream-container">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="encoded-ribbon-label">Continuous Compressed Bitstream:</div>
+        <div class="bitstream-block">
+          <div class="bitstream-text" id="compressed-bitstream-display">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 6: Compression Comparison & Metrics -->
+      <section class="card step-card highlight-card" id="step-6-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 6</span>
+            <h2>Compression Performance & Size Comparison</h2>
+          </div>
+          <span class="badge badge-accent" id="savings-badge-top">0% Space Saved</span>
+        </div>
+
+        <p class="step-explanation">
+          In standard uncompressed representation, 4 distinct DNA bases {A, T, G, C} require <strong>2 bits each</strong> ($2^2 = 4$). Huffman encoding leverages non-uniform base frequencies to allocate fewer bits to frequent bases.
+        </p>
+
+        <!-- Metrics Cards Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card metric-original">
+            <div class="metric-label">Original Binary Size (Fixed 2-bit)</div>
+            <div class="metric-value" id="val-original-bits">0 <span class="metric-unit">bits</span></div>
+            <div class="metric-sub" id="val-original-calc">Sequence Length × 2 bits</div>
+          </div>
+
+          <div class="metric-card metric-compressed">
+            <div class="metric-label">Huffman Encoded Size</div>
+            <div class="metric-value" id="val-compressed-bits">0 <span class="metric-unit">bits</span></div>
+            <div class="metric-sub" id="val-compressed-calc">Sum of (Freq × Code Length)</div>
+          </div>
+
+          <div class="metric-card metric-saved">
+            <div class="metric-label">Net Space Saved</div>
+            <div class="metric-value" id="val-saved-bits">0 <span class="metric-unit">bits</span></div>
+            <div class="metric-sub" id="val-saved-pct-tag">+0.0% reduction</div>
+          </div>
+
+          <div class="metric-card metric-ratio">
+            <div class="metric-label">Compression Percentage</div>
+            <div class="metric-value" id="val-compression-percent">0%</div>
+            <div class="metric-sub" id="val-ratio-desc">Savings over original size</div>
+          </div>
+        </div>
+
+        <!-- Size Visual Comparison Bar -->
+        <div class="visual-size-comparison">
+          <div class="comparison-bar-row">
+            <div class="comparison-label">Original (Fixed 2-bit):</div>
+            <div class="comparison-track">
+              <div class="comparison-fill fill-original" id="bar-original-fill" style="width: 100%;">
+                <span class="bar-fill-text" id="bar-original-text">100% (2.00 bits/base)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="comparison-bar-row">
+            <div class="comparison-label">Huffman Compressed:</div>
+            <div class="comparison-track">
+              <div class="comparison-fill fill-compressed" id="bar-compressed-fill" style="width: 75%;">
+                <span class="bar-fill-text" id="bar-compressed-text">75% (1.50 bits/base)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theoretical Insights Box (Shannon Entropy & Viva Q&A) -->
+        <div class="insights-box">
+          <div class="insights-header">
+            <svg class="insights-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <h3>Algorithm Analysis & Viva Insights</h3>
+          </div>
+          <div class="insights-content">
+            <div class="insight-item">
+              <strong>Average Code Length ($L$):</strong>
+              <span id="insight-avg-len">1.50 bits/symbol</span>
+              <p class="insight-desc">The expected number of bits used per nucleotide by Huffman coding.</p>
+            </div>
+            <div class="insight-item">
+              <strong>Shannon Theoretical Entropy ($H$):</strong>
+              <span id="insight-entropy">1.45 bits/symbol</span>
+              <p class="insight-desc">The theoretical lower bound of compression according to Shannon's Source Coding Theorem.</p>
+            </div>
+            <div class="insight-item">
+              <strong>Why 2 Bits per Base?</strong>
+              <span class="text-cyan">Fixed Binary: $\lceil\log_2 4\rceil = 2$ bits</span>
+              <p class="insight-desc">Since standard DNA has 4 bases, uncompressed binary uses 2 bits (e.g. A=00, C=01, G=10, T=11). When frequencies are biased, Huffman beats this baseline!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 7: Lossless Verification / Decompression -->
+      <section class="card step-card" id="step-7-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-num-pill">Step 7</span>
+            <h2>Lossless Decompression & Tree Traversal Verification</h2>
+          </div>
+          <span class="badge badge-success" id="lossless-badge">Lossless Match</span>
+        </div>
+
+        <p class="step-explanation">
+          To prove Huffman coding is <strong>100% lossless</strong>, we feed the compressed bitstream back into the Huffman tree. Each bit navigates from root to leaf until a nucleotide is decoded, then restarts at the root.
+        </p>
+
+        <div class="decompression-panel">
+          <div class="decompression-row">
+            <span class="decomp-label">Original Sequence:</span>
+            <div class="decomp-seq" id="decomp-original"></div>
+          </div>
+          <div class="decompression-row">
+            <span class="decomp-label">Reconstructed Sequence:</span>
+            <div class="decomp-seq text-success" id="decomp-reconstructed"></div>
+          </div>
+          <div class="decomp-status" id="decomp-status-box">
+            <svg class="decomp-check-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span>Verification Successful: 100% of nucleotides match. Zero data loss.</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>DNA Compression Simulator • Design and Analysis of Algorithms (DAA)</p>
+      <p class="footer-sub">Pure HTML5, CSS3 & JavaScript • Built for interactive algorithm learning & visual demonstration</p>
+    </footer>
+  </div>
+
+  <!-- DNA Scroll-Driven Burst Animation (No Canvas, Pure Website DOM) -->
+  <script src="dna-burst-scroll.js"></script>
+  <!-- Main Simulator Script -->
+  <script src="script.js"></script>
+</body>
+</html>
